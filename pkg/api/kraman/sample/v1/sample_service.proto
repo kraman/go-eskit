@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package kraman.sample.v1;
+
+option go_package = "v1";
+
+import "google/api/annotations.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/empty.proto";
+
+service SampleService {
+	rpc ListSamples(ListSamplesRequest) returns (ListSamplesResponse) {
+		option (google.api.http) = {
+			get: "/v1/samples"
+		};
+	};
+
+	// Gets a Sample.
+	rpc GetSample(GetSampleRequest) returns (Sample) {
+		// Get maps to HTTP GET. Resource name is mapped to the URL. No body.
+		option (google.api.http) = {
+			// Note the URL template variable which captures the multi-segment resource
+			// name of the requested Sample, such as "/samples"
+			get: "/v1/{name=samples/*}"
+		};
+	};
+
+	// Creates a Sample in a shelf.
+	rpc CreateSample(CreateSampleRequest) returns (Sample) {
+		// Create maps to HTTP POST. URL path as the collection name.
+		// HTTP request body contains the resource.
+		option (google.api.http) = {
+			post: "/v1/samples"
+			body: "sample"
+		};
+	};
+
+	// Updates a Sample.
+	rpc UpdateSample(UpdateSampleRequest) returns (Sample) {
+		// Update maps to HTTP PATCH. Resource name is mapped to a URL path.
+		// Resource is contained in the HTTP request body.
+		option (google.api.http) = {
+			// Note the URL template variable which captures the resource name 
+			// of the Sample to update.
+			patch: "/v1/{sample.name=samples/*}"
+			body: "sample"
+		};
+	};
+
+	// Deletes a Sample.
+	rpc DeleteSample(DeleteSampleRequest) returns (google.protobuf.Empty) {
+		// Delete maps to HTTP DELETE. Resource name maps to the URL path.
+		// There is no request body.
+		option (google.api.http) = {
+			// Note the URL template variable capturing the multi-segment name of the
+			// sample resource to be deleted, such as "/samples/sample1"
+			delete: "/v1/{name=samples/*}"
+		};
+	};
+}
+
+message ListSamplesRequest {
+	// The maximum number of items to return.
+	int32 page_size = 1;
+
+	// The next_page_token value returned from a previous List request, if any.
+	string page_token = 2;
+}
+
+message ListSamplesResponse {
+	// The field name should match the noun "Samples" in the method name.  There
+	// will be a maximum number of items returned based on the page_size field
+	// in the request.
+	repeated Sample samples = 1;
+
+	// Token to retrieve the next page of results, or empty if there are no
+	// more results in the list.
+	string next_page_token = 2;
+}
+
+message Sample {
+	string name = 1;
+}
+
+message GetSampleRequest {
+	// The field will contain name of the resource requested, for example:
+	// "samples/sample2"
+	string name = 1;
+}
+
+message CreateSampleRequest {
+  // The Sample id to use for this Sample.
+  string sample_id = 1;
+
+  // The Sample resource to create.
+  // The field name should match the Noun in the method name.
+  Sample sample = 2;
+}
+
+message UpdateSampleRequest {
+  // The Sample resource which replaces the resource on the server.
+  Sample sample = 1;
+
+  // The update mask applies to the resource. For the `FieldMask` definition,
+  // see https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#fieldmask
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message DeleteSampleRequest {
+	// The resource name of the sample to be deleted, for example:
+	// "samples/sample1"
+	string name = 1;
+}
